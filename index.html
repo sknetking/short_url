@@ -1,9 +1,146 @@
 <html>
+  <head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
 <title>
 sknetking
 </title>
+    <style>
+      body{
+  margin:0;
+
+}
+
+.main {
+  font-family: 'Roboto', sans-serif;
+  display:grid;
+  grid-template-rows:90px 1fr 50px;
+  justify-items:stretch;
+  justify-content:stretch;
+  height:100vh;
+  
+}
+
+.header {
+  background-color:#222;
+  color:white;
+  text-align:center;
+  display:grid;
+  grid-template-columns:1fr 10fr 1fr;
+  grid-template-rows:5fr 4fr;
+  align-items:center;
+}
+
+.header h2 {
+  justify-self:start;
+  align-self:center;
+  margin:0 0 0 0;
+  grid-area:1/2/2/3;
+}
+
+.header p {
+  padding-top:3px;
+  justify-self:start;
+  align-self:start;
+  grid-area:2/2/3/3;
+  margin:0 0 10px 0;
+  
+}
+
+.primary {
+ background-color:#465F5f;
+  display:grid;
+ grid-template-columns:1fr 6fr 1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  
+  align-items:end;
+  align-content:center;
+}
+
+.urlInput{
+  grid-area:1/2/2/3;
+  height:40px;
+  padding:0 10px 0 10px;
+  border-radius:4px 0  0 4px;
+  font-size:1.1em;
+  border:1px solid gray;
+}
+
+.urlButton {
+  height:42px;
+  font-size:1.1em;
+  padding:0 10px 0 10px;
+  border-radius:0px 4px 4px 0;
+  border:1px solid gray;
+  grid-area:1/3/2/4;
+  cursor:pointer;
+  max-width:80px;
+  
+  border:none;
+}
+
+.submit{
+  background-color:#0077CC;
+}
+.results{
+  grid-area:1/3/2/4;
+}
+.copy{
+ 
+  background-color:#4CAF50;
+}
+
+.clear{
+  grid-area:2/1/3/5;
+  justify-self:center;
+  align-self:start;
+  text-decoration:none;
+  padding:5px;
+  cursor:pointer;
+  color:white;
+}
+
+.hidden{
+  display:none;
+    z-index:-1;
+}
+
+.footer{
+  grid-rows:3/4;
+  background-color:#222;
+  
+  justify-content:center;
+  
+  
+  display:grid;
+  color:#ddd
+  
+}
+      </style>
+    
+    </head>
 <body>
 You will be redirect on your estination After <div id="Timer"></div>
+
+
+<div class="main">
+    <div class="header">
+      <h2>Shorty</h2>
+      <p>Url Shortener Service</p>
+    </div>
+    <div class="primary">
+      <input class="urlInput" type="text" placeholder="Paste your link here...">
+      <button class="submit urlButton">Submit</button>
+      <div class="results hidden">
+        <button class="copy urlButton">Copy</button>
+      </div>
+      <a href="#" class="clear hidden">Clear</a>
+    </div>
+  <div class="footer">
+    <p>Made by Beaniehead</p>
+  </div>
+  </div>
+
 
 <script>
 var timeLeft = 10;
@@ -21,6 +158,66 @@ function countdown() {
     --timeLeft;
   }
 }
+  
+  const urlInput = document.querySelector(".urlInput");
+const url = "https://shorts.glitch.me/new/";
+const result = document.querySelector(".result");
+const results = document.querySelector(".results");
+const copy = document.querySelector(".copy");
+const submit = document.querySelector(".submit");
+const clear = document.querySelector(".clear");
+const initial = "Paste your link here...";
+
+function shorten() {
+  if(!urlInput.value){
+    urlInput.placeholder="You need to enter a link to shorten...";
+  } else {
+    urlInput.placeholder=initial;
+    getURL();
+  }
+ }
+
+function getURL(){
+ const site = urlInput.value;
+  const requestURL = `${url}${site}`;
+  fetch(requestURL)
+    .then((res) => {
+    if (res.status !== 200) {
+      console.log(`There was a problem. Code: ${res.status}`);
+      return;
+    }
+    return res.json();
+  })
+    .then((data) => {
+    if(data.error){ 
+      urlInput.value="";
+      urlInput.placeholder = data.error;
+      setTimeout(()=>{
+        urlInput.placeholder = initial;
+      },4000)
+      
+    } else {
+        urlInput.value = data.newUrl;
+ 
+    results.classList.toggle("hidden");
+    submit.classList.toggle("hidden");
+    clear.classList.toggle("hidden");
+  urlInput.select();
+  }
+  })
+    .catch((err)=> console.log('Fetch Error', err));
+}
+
+function reset(){
+  urlInput.value = "";
+    results.classList.toggle("hidden");
+    submit.classList.toggle("hidden");
+    clear.classList.toggle("hidden");
+}
+
+submit.addEventListener("click", shorten);
+copy.addEventListener("click", ()=>document.execCommand("Copy"));
+clear.addEventListener("click", reset)
   </script>
   <body>
   </html>
